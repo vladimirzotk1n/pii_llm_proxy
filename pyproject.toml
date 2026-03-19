@@ -1,0 +1,20 @@
+[project]
+name = "pii-service"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+requires-python = ">=3.12"
+dependencies = [
+    "fastapi>=0.135.1",
+    "grpcio>=1.78.0",
+    "loguru>=0.7.3",
+    "numpy>=2.4.3",
+    "pydantic-settings>=2.13.1",
+    "pytest>=9.0.2",
+    "redis>=7.3.0",
+    "requests>=2.32.5",
+    "transformers>=5.3.0",
+    "tritonclient[grpc]>=2.46.0",
+    "uvicorn>=0.42.0",
+    "uvloop>=0.22.1",
+]

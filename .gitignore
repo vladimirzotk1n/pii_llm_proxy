@@ -1,0 +1,23 @@
+# Python-generated files
+__pycache__/
+*.py[oc]
+build/
+dist/
+wheels/
+*.egg-info
+
+# Virtual environments
+.venv
+.DS_Store
+.env
+redis_data
+
+.pytest_cache
+pytest.init
+
+ПЛАН.md
+test.py
+triton/models/ner_onnx/1/model.onnx
+triton/models/ner_onnx/1/model.onnx.data
+
+
