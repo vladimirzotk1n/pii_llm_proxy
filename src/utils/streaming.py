@@ -3,7 +3,6 @@ import json
 import httpx
 
 from src.config import get_settings
-from src.logger_config import logger
 from src.utils.masking import Unmasker
 
 settings = get_settings()
@@ -30,10 +29,11 @@ async def stream_llm(model: str, prompt: str, access_token: str):
             json=payload,
             headers=headers,
         ) as response:
-            logger.info(f"{response}")
             async for line in response.aiter_lines():
+                if not line:
+                    continue
                 if line.startswith("data:"):
-                    data = line[6:]
+                    data = line.removeprefix("data:").strip()
                     if data == "[DONE]":
                         break
                     yield data

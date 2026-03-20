@@ -1,23 +1,4 @@
 services:
-  # redis:
-  #   container_name: redis
-  #   command: redis-server --requirepass ${REDIS_PASSWORD}
-  #   environment:
-  #     - REDIS_PASSWORD=${REDIS__REDIS_PASSWORD}
-  #     - REDIS_USER=${REDIS__REDIS_USER}
-  #     - REDIS_USER_PASSWORD=${REDIS__REDIS_USER_PASSWORD}
-  #   image: redis 
-  #   ports:
-  #     - 6379:6379
-  #   healthcheck:
-  #     test: [ "CMD", "redis-cli", "--raw", "incr", "ping" ]
-  #     interval: 1m30s
-  #     timeout: 30s
-  #     retries: 5
-  #     start_period: 30s
-  #   volumes:
-  #     - ./redis_data:/data
-
   backend:
     container_name: backend
     build: 

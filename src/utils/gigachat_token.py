@@ -47,3 +47,11 @@ class TokenManager:
         self.token_cache = TokenCache(
             access_token=data["access_token"], expires_at=data["expires_at"] / 1000
         )
+
+
+if __name__ == "__main__":
+    ak = "<token>"
+    tm = TokenManager(ak)
+    import asyncio
+
+    print(asyncio.run(tm.get_token()))

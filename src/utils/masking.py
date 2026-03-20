@@ -40,6 +40,8 @@ def mask_prompt(prompt: str, mask_mapping: dict[str, str]) -> str:
     placeholder_counter = {p: 1 for p in set(mask_mapping.values())}
 
     for key, placeholder in sorted_mapping:
+        if placeholder == "O":
+            continue
         while key in masked_prompt:
             index = placeholder_counter[placeholder]
             mask = f"[[{placeholder}_{index}]]"
