@@ -3,7 +3,6 @@ import json
 import httpx
 
 from src.config import get_settings
-from src.logger_config import logger
 from src.utils.masking import Unmasker
 
 settings = get_settings()

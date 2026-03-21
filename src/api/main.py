@@ -3,8 +3,6 @@ from contextlib import asynccontextmanager
 from fastapi import FastAPI
 
 from src.api.routers import router
-
-# TODO: add redis back
 from src.config import get_settings
 from src.logger_config import logger
 from src.model.triton_infer import InferenceServer

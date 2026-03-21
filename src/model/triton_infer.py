@@ -1,5 +1,3 @@
-import os
-
 import grpc
 import numpy as np
 import tritonclient.grpc.aio as grpcclient
