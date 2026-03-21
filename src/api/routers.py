@@ -22,10 +22,7 @@ async def chat(
     triton_response = await inference_server.infer_text(message)
     predictions, tokens = triton_response["predictions"], triton_response["tokens"]
     mask_mapping = create_mask(predictions, tokens)
-    logger.info(f"MASK MAPPING> {mask_mapping}")
     masked_prompt, unmask_mapping = mask_prompt(message, mask_mapping)
-
-    logger.info(f"MASKED PROMPT: {masked_prompt}")
 
     async def event_stream():
         async for chunk in proxy_stream_llm(

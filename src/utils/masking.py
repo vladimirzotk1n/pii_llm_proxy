@@ -32,7 +32,9 @@ def create_mask(tag_ids: list[int], tokens: list[str]) -> dict[str, str]:
     return masking_map
 
 
-def mask_prompt(prompt: str, mask_mapping: dict[str, str]) -> str:
+def mask_prompt(
+    prompt: str, mask_mapping: dict[str, str]
+) -> str:  # TODO: пустой unmasking_mapping
     masked_prompt = prompt
     unmasking_mapping = {}
     sorted_mapping = sorted(mask_mapping.items(), key=lambda x: len(x[0]), reverse=True)
@@ -70,11 +72,12 @@ class Unmasker:
             output += self.buffer[:start]
 
             tag = match.group(0)
-            if tag in self.unmapping:
-                output += self.unmapping[tag]
-            else:
-                output += tag
+            output += self.unmapping.get(tag, tag)
 
             self.buffer = self.buffer[end:]
+
+        if not TOKEN_RE.search(self.buffer):
+            output += self.buffer
+            self.buffer = ""
 
         return output
