@@ -35,4 +35,4 @@ if __name__ == "__main__":
     token_manager = TokenManager(auth_key)
 
     access_token = asyncio.run(token_manager.get_token())
-    print(f"Your access token: \n\n{access_token}")
+    print(f"Your access token: \n\n{access_token}\n")

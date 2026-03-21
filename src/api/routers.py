@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends, Header, Request
+from fastapi import APIRouter, Depends, Request
 from fastapi.responses import StreamingResponse
 
 from src.api.deps import get_inference_server
@@ -13,21 +13,23 @@ router = APIRouter()
 @router.post("/chat/completions")
 async def chat(
     request: Request,
-    authorization: str = Header(),
     inference_server: InferenceServer = Depends(get_inference_server),
 ):
+    allowed_headers = {
+        "authorization": request.headers.get("authorization"),
+        "content-type": "application/json",
+    }
     body = await request.json()
-    access_token = authorization.split()[-1]  # Bearer <token>
-    model, message = body["model"], body["messages"][-1].get("content", "")
+    message = body["messages"][-1]["content"]
     triton_response = await inference_server.infer_text(message)
     predictions, tokens = triton_response["predictions"], triton_response["tokens"]
     mask_mapping = create_mask(predictions, tokens)
     masked_prompt, unmask_mapping = mask_prompt(message, mask_mapping)
 
+    body["messages"][-1]["content"] = masked_prompt
+
     async def event_stream():
-        async for chunk in proxy_stream_llm(
-            model, masked_prompt, unmask_mapping, access_token
-        ):
+        async for chunk in proxy_stream_llm(body, allowed_headers, unmask_mapping):
             yield f"data: {chunk}\n\n"
         yield "data: [DONE]\n\n"
 

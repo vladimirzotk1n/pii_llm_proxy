@@ -63,7 +63,7 @@ class Unmasker:
         self.buffer = ""
 
     def process(self, chunk: str) -> str:
-        """[[NAME_i]] - ключ такой будет"""
+        """[[NAME_i]] - ключ такого формата"""
         self.buffer += chunk
         output = ""
 

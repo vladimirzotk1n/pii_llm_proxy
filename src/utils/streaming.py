@@ -3,32 +3,36 @@ import json
 import httpx
 
 from src.config import get_settings
+from src.logger_config import logger
 from src.utils.masking import Unmasker
 
 settings = get_settings()
 
+SYSTEM_PROMPT = (
+    "You are a helpful assistant.\n\n"
+    "User input may contain redacted sensitive fields represented as placeholders "
+    "like [[TYPE_i]]. Treat these placeholders as normal parts of the text.\n"
+    "Do not comment on them, do not explain them, and do not treat them as special.\n"
+    "Use them exactly as they appear in the input.\n\n"
+    "Never modify, infer, replace, or expand placeholders.\n"
+    "Do not attempt to guess their meaning or contents.\n\n"
+    "Do not repeat the user input. Respond directly to the question.\n\n"
+    "Input:\n"
+)
 
-async def stream_llm(model: str, prompt: str, access_token: str):
-    headers = {
-        "Authorization": f"Bearer {access_token}",
-        "Content-Type": "application/json",
-    }
 
-    payload = {
-        "model": model,
-        "messages": [{"role": "user", "content": prompt}],  # TODO: добавить память
-        "stream": True,
-    }
-
+async def stream_llm(body: dict, headers: dict):
+    body["messages"] = [{"role": "system", "content": SYSTEM_PROMPT}] + body["messages"]
     async with httpx.AsyncClient(
         timeout=None, verify=False
     ) as client:  # TODO: сделать с TLS
         async with client.stream(
             "POST",
             "https://gigachat.devices.sberbank.ru/api/v1/chat/completions",
-            json=payload,
+            json=body,
             headers=headers,
         ) as response:
+            response.raise_for_status()
             async for line in response.aiter_lines():
                 if not line:
                     continue
@@ -39,12 +43,10 @@ async def stream_llm(model: str, prompt: str, access_token: str):
                     yield data
 
 
-async def proxy_stream_llm(
-    model: str, masked_prompt: str, mapping: dict[str, str], access_token: str
-):
+async def proxy_stream_llm(body: dict, headers: dict, mapping: dict[str, str]):
     unmasker = Unmasker(mapping)
 
-    async for raw_chunk in stream_llm(model, masked_prompt, access_token):
+    async for raw_chunk in stream_llm(body, headers):
         if raw_chunk == "[DONE]":
             break
 
