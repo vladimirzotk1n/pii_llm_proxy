@@ -1,25 +1,37 @@
 services:
   backend:
     container_name: backend
-    build: 
+    build:
       context: .
       dockerfile: ./src/api/Dockerfile
     ports:
       - 8080:80
+    volumes:
+      - ./prod.log:/app/prod.log
     depends_on:
       - triton
-    
+    networks:
+      - monitoring
+
+
   triton:
     container_name: triton
     image: nvcr.io/nvidia/tritonserver:24.09-py3
     ports:
-      - 8000:8000 
-      - 8001:8001  
-      - 8002:8002  
+      - 8000:8000  
+      - 8001:8001   
+      - 8002:8002   
     restart: always
     volumes:
       - ./triton/models:/models
-    command: ["tritonserver", "--model-store=/models"]
+    command: [
+      "tritonserver",
+      "--model-store=/models",
+      "--allow-metrics=true",
+      "--metrics-port=8002"
+    ]
+    networks:
+      - monitoring
 
   prometheus:
     container_name: prometheus
@@ -28,7 +40,12 @@ services:
       - 9090:9090
     volumes:
       - ./prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
+      - prometheus_data:/prometheus
     restart: always
+    depends_on:
+      - triton
+    networks:
+      - monitoring
 
   grafana:
     container_name: grafana
@@ -36,7 +53,21 @@ services:
     ports:
       - 3000:3000
     environment:
-      - GF_SECURITY_ADMIN_PASSWORD=${GF_SECURITY_ADMIN_PASSWORD} 
+      - GF_SECURITY_ADMIN_PASSWORD=${GF_SECURITY_ADMIN_PASSWORD}
+      - GF_PROVISIONING_PATH=/etc/grafana/provisioning
+    volumes:
+      - grafana_data:/var/lib/grafana
+      - ./grafana/provisioning:/etc/grafana/provisioning  
     restart: always
+    depends_on:
+      - prometheus
+    networks:
+      - monitoring
 
-    
+volumes:
+  prometheus_data:
+  grafana_data:
+
+networks:
+  monitoring:
+    driver: bridge

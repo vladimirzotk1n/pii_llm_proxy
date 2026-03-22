@@ -2,7 +2,6 @@ from fastapi import APIRouter, Depends, Request
 from fastapi.responses import StreamingResponse
 
 from src.api.deps import get_inference_server
-from src.logger_config import logger
 from src.model.triton_infer import InferenceServer
 from src.utils.masking import create_mask, mask_prompt
 from src.utils.streaming import proxy_stream_llm

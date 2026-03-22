@@ -1,7 +1,7 @@
 {
   "__inputs": [
     {
-      "name": "DS_PROMETHEUS",
+      "name": "prometheus",
       "label": "Prometheus",
       "description": "",
       "type": "datasource",
@@ -59,7 +59,7 @@
       "bars": false,
       "dashLength": 10,
       "dashes": false,
-      "datasource": "${DS_PROMETHEUS}",
+      "datasource": "prometheus",
       "fill": 1,
       "fillGradient": 0,
       "gridPos": {
@@ -146,72 +146,106 @@
       }
     },
     {
-      "cards": {
-        "cardPadding": null,
-        "cardRound": null
-      },
-      "color": {
-        "cardColor": "#b4ff00",
-        "colorScale": "sqrt",
-        "colorScheme": "interpolateReds",
-        "exponent": 0.5,
-        "mode": "spectrum"
-      },
-      "dataFormat": "timeseries",
+      "aliasColors": {},
+      "bars": false,
+      "dashLength": 10,
+      "dashes": false,
+      "datasource": "prometheus",
+      "fill": 1,
+      "fillGradient": 0,
       "gridPos": {
         "h": 9,
         "w": 12,
         "x": 12,
         "y": 0
       },
-      "heatmap": {},
-      "hideZeroBuckets": false,
-      "highlightCards": true,
       "id": 7,
       "legend": {
-        "show": false
+        "avg": false,
+        "current": false,
+        "max": false,
+        "min": false,
+        "show": true,
+        "total": false,
+        "values": false
       },
-      "options": {},
-      "reverseYBuckets": false,
+      "lines": true,
+      "linewidth": 1,
+      "nullPointMode": "null",
+      "options": {
+        "dataLinks": []
+      },
+      "percentage": false,
+      "pointradius": 2,
+      "points": false,
+      "renderer": "flot",
+      "seriesOverrides": [],
+      "spaceLength": 10,
+      "stack": false,
+      "steppedLine": false,
       "targets": [
         {
-          "expr": "sum(increase(nv_inference_load_ratio_bucket[1m])) by (le)",
-          "legendFormat": "",
+          "expr": "rate(nv_inference_request_duration_us[30s]) / (rate(nv_inference_compute_input_duration_us[30s]) + rate(nv_inference_compute_infer_duration_us[30s]) + rate(nv_inference_compute_output_duration_us[30s]))",
+          "legendFormat": "Load Ratio {{instance}}",
           "refId": "A"
         }
       ],
+      "thresholds": [
+        {
+          "colorMode": "critical",
+          "fill": true,
+          "line": true,
+          "op": "gt",
+          "value": 2,
+          "yaxis": "left"
+        }
+      ],
       "timeFrom": null,
+      "timeRegions": [],
       "timeShift": null,
-      "title": "Load Ratio  (Total Time / Compute Time)",
+      "title": "Load Ratio (Total Time / Compute Time)",
       "tooltip": {
+        "shared": true,
+        "sort": 0,
+        "value_type": "individual"
+      },
+      "type": "graph",
+      "xaxis": {
+        "buckets": null,
+        "mode": "time",
+        "name": null,
         "show": true,
-        "showHistogram": false
+        "values": []
       },
-      "type": "heatmap",
-      "xAxis": {
-        "show": true
-      },
-      "xBucketNumber": null,
-      "xBucketSize": null,
-      "yAxis": {
-        "decimals": null,
-        "format": "short",
-        "logBase": 1,
-        "max": null,
-        "min": null,
-        "show": true,
-        "splitFactor": null
-      },
-      "yBucketBound": "auto",
-      "yBucketNumber": null,
-      "yBucketSize": null
+      "yaxes": [
+        {
+          "format": "short",
+          "label": "Ratio",
+          "logBase": 1,
+          "max": null,
+          "min": "0",
+          "show": true
+        },
+        {
+          "format": "short",
+          "label": null,
+          "logBase": 1,
+          "max": null,
+          "min": null,
+          "show": false
+        }
+      ],
+      "yaxis": {
+        "align": false,
+        "alignLevel": null
+      }
     },
     {
       "aliasColors": {},
       "bars": false,
       "dashLength": 10,
       "dashes": false,
-      "datasource": "${DS_PROMETHEUS}",
+      "datasource": "prometheus",
       "fill": 1,
       "fillGradient": 0,
       "gridPos": {
@@ -297,7 +331,7 @@
       "bars": false,
       "dashLength": 10,
       "dashes": false,
-      "datasource": "${DS_PROMETHEUS}",
+      "datasource": "prometheus",
       "fill": 1,
       "fillGradient": 0,
       "gridPos": {
@@ -332,9 +366,19 @@
       "steppedLine": false,
       "targets": [
         {
-          "expr": "rate(nv_inference_compute_duration_us[30s]) / 1000",
-          "legendFormat": "{{instance}}",
+          "expr": "rate(nv_inference_compute_infer_duration_us[30s]) / 1000",
+          "legendFormat": "Infer {{instance}}",
           "refId": "A"
+        },
+        {
+          "expr": "rate(nv_inference_compute_input_duration_us[30s]) / 1000",
+          "legendFormat": "Input {{instance}}",
+          "refId": "B"
+        },
+        {
+          "expr": "rate(nv_inference_compute_output_duration_us[30s]) / 1000",
+          "legendFormat": "Output {{instance}}",
+          "refId": "C"
         }
       ],
       "thresholds": [],
@@ -407,6 +451,6 @@
   "timezone": "",
   "title": "Triton Inference Server",
   "uid": "slEY4dsZk",
-  "version": 8,
+  "version": 9,
   "description": "Nvidia Triton inference server metrics"
 }

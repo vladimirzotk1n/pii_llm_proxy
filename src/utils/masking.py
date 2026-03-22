@@ -32,9 +32,7 @@ def create_mask(tag_ids: list[int], tokens: list[str]) -> dict[str, str]:
     return masking_map
 
 
-def mask_prompt(
-    prompt: str, mask_mapping: dict[str, str]
-) -> str:  # TODO: пустой unmasking_mapping
+def mask_prompt(prompt: str, mask_mapping: dict[str, str]) -> str:
     masked_prompt = prompt
     unmasking_mapping = {}
     sorted_mapping = sorted(mask_mapping.items(), key=lambda x: len(x[0]), reverse=True)
